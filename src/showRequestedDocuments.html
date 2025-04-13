@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Requested Documents</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+		<link rel="stylesheet" type="text/css" href="index.css">
+		<link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+    </head>
+    <body>
+            <div class="w3-container w3-text-white w3-center w3-padding" style="background-color:#212d74;">
+                
+					<h4>Decentralized Application for Identity Management</h4>
+					<div class="w3-bar" style="float: left;">
+						<a href="index.html" class="w3-bar-item"><i class='fas fa-home' style="font: size 20px;"></i></a>
+						<a href="userHomePage.html" class="w3-bar-item"><i class='far fa-user' style='font-size:20px;'></i></a>
+					</div>
+			</div>
+			<p id='logstatus' class="w3-center"><mark></mark></p>
+			<button id='logoutBtn' style='font-size:16px' class="w3-button w3-small w3-red w3-hover-black w3-right w3-padding-small">Logout<i class='fas fa-sign-out-alt'></i></button>
+            <div class="w3-padding-large">
+                <center>
+                <div class = "w3-container w3-text-black" style="width:95%;">
+                    <div id="userhomepage" class="w3-padding-large">
+						<div class="w3-card w3-padding w3-blue" style="width: 50%;">
+							<h4 class="w3-black">Share Documents</h4>
+							Share with Public Address:
+							<input type="text" id="enterUserPublicAddr" class="w3-input" style="width: 75%;">
+							<br>
+							<select name="docsToShare" id='docSelect'>
+								<option value="aadhaar">Aadhaar Card</option>
+								<option value="birthcert">Birth certificate</option>
+								<option value="drivlicens">Driving License</option>
+								<option value="passpt">Passport</option>
+								<option value="votercard">Voter Card</option>
+							</select>
+							<button type="button" id='shareDocs' class="w3-button w3-teal w3-hover-black w3-round">Share</button>
+							<br>
+							<p id='status' class="w3-tag w3-green"></p>
+						</div>
+                        <br><br>
+							
+							Click on any address below to view the documents requested by the requester
+						<div class="w3-row w3-container w3-black">
+							<div class="w3-third w3-container">
+							  <h3>Requester Address</h3>  
+							</div>
+							<div class="w3-twothird w3-container">
+							  <h3>Documents</h3>
+							</div>
+						</div>
+						<div class="w3-row w3-container w3-light-blue">
+							<div class="w3-half">
+							  <p id='requesterAddress1'></p>
+							  <p id='requesterName1'></p>  
+							</div>
+							<div class="w3-half w3-padding" id='hidenshow1' style="display: none">
+								<button id='aadhaarbtn1' type="button" class="w3-button w3-green">Aadhaar</button>
+								<button id='birthcertbtn1' type="button" class="w3-button w3-green">Birth Certificate</button>
+							</div>
+						</div>
+						<div class="w3-row w3-container w3-pale-green">
+							<div class="w3-half">
+							  <p id='requesterAddress2'></p>
+							  <p id='requesterName2'></p>    
+							</div>
+							<div class="w3-half w3-padding" id='hidenshow2' style="display: none">
+								<button id='aadhaarbtn2' type="button" class="w3-button w3-green">Aadhaar</button>
+								<button id='birthcertbtn2' type="button" class="w3-button w3-green">Birth Certificate</button>
+							</div>
+						</div>
+						<div class="w3-row w3-container w3-light-blue">
+							<div class="w3-half">
+							  <p id='requesterAddress3'></p>
+							  <p id='requesterName3'></p>    
+							</div>
+							<div class="w3-half w3-padding" id='hidenshow3' style="display: none">
+								<button id='aadhaarbtn3' type="button" class="w3-button w3-green">Aadhaar</button>
+								<button id='birthcertbtn3' type="button" class="w3-button w3-green">Birth Certificate</button>
+							</div>
+						</div>
+						<div class="w3-row w3-container w3-pale-green">
+							<div class="w3-half">
+							  <p id='requesterAddress4'></p>
+							  <p id='requesterName4'></p>    
+							</div>
+							<div class="w3-half w3-padding" id='hidenshow4' style="display: none">
+								<button id='aadhaarbtn4' type="button" class="w3-button w3-green">Aadhaar</button>
+								<button id='birthcertbtn4' type="button" class="w3-button w3-green">Birth Certificate</button>
+							</div>
+						</div>
+						
+                    </div>
+				</div>
+				</center>
+            <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js"></script>
+			<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+            <script >
+				
+                var contract;
+                $(document).ready(async function()
+                {
+                    web3 = new Web3(web3.currentProvider);
+                    const addressRes = await fetch("addresses.json");
+                    const addresses = await addressRes.json();
+                    var address = addresses.Base;
+                    var abi =   [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "_docs_permitted",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "aadhaarproof",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "birthproof",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "_docs_permitted_tb",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "aadhaarproof",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "birthproof",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "docsRequestedDB",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "aadhaarproof",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "birthproof",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "gov",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "govtOrgsList",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "govtorgLogin",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "usern",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "userp",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "govtorgLoginStatus",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "govtorgRegisterStatus",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "govtorgRegisteredStatus",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "govtorgsCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "matchAddrToEmail",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "myDocuments",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "fileDocName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "regUniqueNum",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "initialVerification",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "userDetails",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "userEmailId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "userpassword",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "userFullName",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "age",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "dateOfBirth",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "userHouseAddress",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "mobileNumber",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "aadharNum",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "userLogin",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "usern",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "userp",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "userLoginStatus",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "userRegisterStatus",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "userRegisteredStatus",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "usersCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "num",
+          "type": "uint256"
+        }
+      ],
+      "name": "getOrgAt",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "logout",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ];
+                contract = new web3.eth.Contract(abi, address);
+                contract.methods.getOrgAt(1).call().then(function(bal)
+                {
+					if(bal=="0x0000000000000000000000000000000000000000"){
+						$('#requesterAddress1').html("-");
+						$('#requesterAddress1').off('click');
+					}else{
+						$('#requesterAddress1').html(bal);
+						contract.methods.getOrgNameAt(1).call().then(function(bal)
+                		{
+                    		$('#requesterName1').html(bal);
+                		})
+					}    
+                })
+				
+				contract.methods.getOrgAt(2).call().then(function(bal)
+                {
+					if(bal=="0x0000000000000000000000000000000000000000"){
+						$('#requesterAddress2').html("-");
+						$('#requesterAddress2').off('click');
+					}else{
+						$('#requesterAddress2').html(bal);
+						contract.methods.getOrgNameAt(2).call().then(function(bal)
+                		{
+                    		$('#requesterName2').html(bal);
+                		})
+					}
+                })
+				contract.methods.getOrgAt(3).call().then(function(bal)
+                {
+					if(bal=="0x0000000000000000000000000000000000000000"){
+						$('#requesterAddress3').html("-");
+						$('#requesterAddress3').off('click');
+					}else{
+						$('#requesterAddress3').html(bal);
+						contract.methods.getOrgNameAt(3).call().then(function(bal)
+                		{
+                    		$('#requesterName3').html(bal);
+                		})
+					}
+                })
+				contract.methods.getOrgAt(4).call().then(function(bal)
+                {
+					if(bal=="0x0000000000000000000000000000000000000000"){
+						$('#requesterAddress4').html("-");
+						$('#requesterAddress4').off('click');
+					}else{
+						$('#requesterAddress4').html(bal);
+						contract.methods.getOrgNameAt(4).call().then(function(bal)
+                		{
+                    		$('#requesterName4').html(bal);
+                		})
+					}
+                })
+            })
+            
+			$('#requesterAddress1').click(function()
+            {   
+                web3.eth.getAccounts().then(function(accounts)
+                {
+                    var acc = accounts[0];
+                    return contract.methods.getOrgDetails(1).send({from: acc});
+                }).then(function(tx)
+                {
+                    console.log(tx);
+					$("#hidenshow1").show();
+					contract.methods.getDoc1().call().then(function(bal)
+                	{
+                        $('#a1').html(bal);
+						var r = bal;
+						if(bal=="1"){
+							$('#aadhaarbtn1').removeAttr("disabled");
+						} else{
+							$('#aadhaarbtn1').prop("disabled",true);
+						}
+                    })
+                    contract.methods.getDoc2().call().then(function(bal)
+                	{
+						$('#a2').html(bal);
+						if(bal=="1"){
+							$('#birthcertbtn1').removeAttr("disabled");
+						} else{
+							$('#birthcertbtn1').prop("disabled",true);
+						}
+                    })
+                    
+                }).catch(function(tx)
+                {
+                    console.log(tx);
+                })
+            })
+			$('#requesterAddress2').click(function()
+            {   
+                web3.eth.getAccounts().then(function(accounts)
+                {
+                    var acc = accounts[0];
+                    return contract.methods.getOrgDetails(2).send({from: acc});
+                }).then(function(tx)
+                {
+                    console.log(tx);
+					$("#hidenshow2").show();
+					contract.methods.getDoc1().call().then(function(bal)
+                	{
+                        $('#a1').html(bal);
+						var r = bal;
+						if(bal=="1"){
+							$('#aadhaarbtn2').removeAttr("disabled");
+						} else{
+							$('#aadhaarbtn2').prop("disabled",true);
+						}
+                    })
+                    contract.methods.getDoc2().call().then(function(bal)
+                	{
+						$('#a2').html(bal);
+						if(bal=="1"){
+							$('#birthcertbtn2').removeAttr("disabled");
+						} else{
+							$('#birthcertbtn2').prop("disabled",true);
+						}
+                    })
+                }).catch(function(tx)
+                {
+                    console.log(tx);
+                })
+            })
+			$('#requesterAddress3').click(function()
+            {   
+                web3.eth.getAccounts().then(function(accounts)
+                {
+                    var acc = accounts[0];
+                    return contract.methods.getOrgDetails(3).send({from: acc});
+                }).then(function(tx)
+                {
+                    console.log(tx);
+					$("#hidenshow3").show();
+					contract.methods.getDoc1().call().then(function(bal)
+                	{
+                        $('#a1').html(bal);
+						if(bal=="1"){
+							$('#aadhaarbtn3').removeAttr("disabled");
+						} else{
+							$('#aadhaarbtn3').prop("disabled",true);
+						}
+                    })
+                    contract.methods.getDoc2().call().then(function(bal)
+                	{
+						$('#a2').html(bal);
+						if(bal=="1"){
+							$('#birthcertbtn3').removeAttr("disabled");
+						} else{
+							$('#birthcertbtn3').prop("disabled",true);
+						}
+                    })
+                    
+                }).catch(function(tx)
+                {
+                    console.log(tx);
+                })
+            })
+			$('#requesterAddress4').click(function()
+            {   
+                web3.eth.getAccounts().then(function(accounts)
+                {
+                    var acc = accounts[0];
+                    return contract.methods.getOrgDetails(4).send({from: acc});
+                }).then(function(tx)
+                {
+                    console.log(tx);
+					$("#hidenshow4").show();
+					contract.methods.getDoc1().call().then(function(bal)
+                	{
+                        $('#a1').html(bal);
+						if(bal=="1"){
+							$('#aadhaarbtn4').removeAttr("disabled");
+						} else{
+							$('#aadhaarbtn4').prop("disabled",true);
+						}
+                    })
+                    contract.methods.getDoc2().call().then(function(bal)
+                	{
+						$('#a2').html(bal);
+						if(bal=="1"){
+							$('#birthcertbtn4').removeAttr("disabled");
+						} else{
+							$('#birthcertbtn4').prop("disabled",true);
+						}
+                    })
+                }).catch(function(tx)
+                {
+                    console.log(tx);
+                })
+            })
+
+			$("#shareDocs").click(function(){
+				var message = "Shared";
+				var t = "true";
+				var val = 1;
+				var ethAddress,d1;
+				ethAddress = $('#enterUserPublicAddr').val();
+				d1 = $('#docSelect').val();
+				if(d1=="aadhaar"){
+					web3.eth.getAccounts().then(function(accounts)
+                	{
+                    	var acc = accounts[0];
+                    	return contract.methods.setPermissionDoc1(ethAddress,val).send({from: acc});
+                	}).then(function(tx)
+                	{
+                    	console.log(tx);
+						$('#status').html(message);
+                	}).catch(function(tx)
+                	{
+                    	console.log(tx);
+                	})
+				}
+				else if(d1=="birthcert") {
+					web3.eth.getAccounts().then(function(accounts)
+                	{
+                    	var acc = accounts[0];
+                    	return contract.methods.setPermissionDoc2(ethAddress,val).send({from: acc});
+                	}).then(function(tx)
+                	{
+                    	console.log(tx);
+						$('#status').html(message);
+                	}).catch(function(tx)
+                	{
+                    	console.log(tx);
+                	})
+				}
+			})
+
+			$('#logoutBtn').click(function()
+            {   
+                var logoutStatement = "You are Logged out";
+                web3.eth.getAccounts().then(function(accounts)
+                {
+                    var acc = accounts[0];
+                    return contract.methods.logout().send({from: acc});
+                }).then(function(tx)
+                {
+                    console.log(tx);
+                        $('#logstatus').html(logoutStatement);
+                }).catch(function(tx)
+                {
+                    console.log(tx);
+                })
+            })
+            </script>
+        </body>
+</html>

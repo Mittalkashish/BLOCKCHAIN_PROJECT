@@ -1,0 +1,36 @@
+
+
+# aadhaar_proof circuits fails to generate the aadhar_public key if it is working then remove this comment
+
+
+zkp pipeline
+
+
+# compile
+circom circuits/aadhaar_proof.circom --r1cs --wasm --sym -o zkp/ 
+
+
+# witness
+node zkp/aadhaar_proof_js/generate_witness.js zkp/aadhaar_proof_js/aadhaar_proof.wasm circuits/input.json zkp/witness.wtns
+
+# setup
+snarkjs groth16 setup zkp/aadhaar_proof.r1cs pot12_final.ptau zkp/aadhaar_0000.zkey
+snarkjs zkey contribute zkp/aadhaar_0000.zkey zkp/aadhaar_final.zkey --name="contrib" -v
+snarkjs zkey export verificationkey zkp/aadhaar_final.zkey zkp/aadhaar_verification_key.json
+
+# proof
+snarkjs groth16 prove zkp/aadhaar_final.zkey zkp/witness.wtns zkp/aadhaar_proof.json zkp/aadhaar_public.json
+
+# export solidity verifier
+snarkjs zkey export solidityverifier zkp/aadhaar_final.zkey contracts/VerifierAadhaarProof.sol
+
+
+(optional) or one time
+
+# start Contribute to the ceremony
+snarkjs powersoftau new bn128 15 pot12_0000.ptau -v
+snarkjs powersoftau contribute pot12_0000.ptau pot12_0001.ptau --name="First Contributor" -v
+snarkjs powersoftau prepare phase2 pot12_0001.ptau pot12_final.ptau
+
+
+

@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>User - Add Birth Certificate</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+    <link rel="stylesheet" type="text/css" href="index.css" />
+  </head>
+  <body>
+    <div
+      class="w3-container w3-text-white w3-center"
+      style="background-color: #212d74"
+    >
+      <h4>Decentralized Application for Identity Management</h4>
+    </div>
+    <br /><br />
+    <div class="w3-padding-large">
+      <center>
+        <div class="w3-container w3-red w3-text-black" style="width: 50%">
+          <div class="w3-padding-large">
+            <h4>Add Documents - Birth Certificate</h4>
+            <br />
+            <label style="float: left">Birth Registration Number*</label>
+            <input
+              type="text"
+              id="birthregnum"
+              class="w3-input w3-border"
+            /><br />
+            <button
+              id="add_birthregnum_btn"
+              class="w3-button w3-blue w3-round-xlarge"
+            >
+              <b>Add Birth Registration Number</b>
+            </button>
+            <p id="status"></p>
+            <p id="one"></p>
+          </div>
+        </div>
+      </center>
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      var contract;
+      $(document).ready(async function () {
+        web3 = new Web3(web3.currentProvider);
+        const addressRes = await fetch("addresses.json");
+        const addresses = await addressRes.json();
+        var address = addresses.User;
+        var abi = [
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            name: "_docs_permitted",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "aadhaarproof",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "birthproof",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            name: "_docs_permitted_tb",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "aadhaarproof",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "birthproof",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "string",
+                name: "_addGovtorgEmailid",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "_addGovtorgPassword",
+                type: "string",
+              },
+            ],
+            name: "addGovtLogin",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [],
+            name: "d1",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "d2",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "doc1",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "doc2",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            name: "docsRequestedDB",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "aadhaarproof",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "birthproof",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "getGovorgContactnum",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "getGovorgHq",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "getGovorgIdNum",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "getGovorgLocation",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "getGovorgName",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "getGovtOrgsCount",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "uint256",
+                name: "num",
+                type: "uint256",
+              },
+            ],
+            name: "getOrgAt",
+            outputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "getd1",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "getd2",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "gov",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "govorg_ContactNum",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "govorg_HQ",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "govorg_IdNum",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "govorg_Location",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "govorg_Name",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "govorg_UserRequestedCount",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            name: "govtOrgsList",
+            outputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            name: "govtorgDetails",
+            outputs: [
+              {
+                internalType: "string",
+                name: "govtOrgEmailId",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "govtOrgPassword",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "govtOrgName",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "govtOrgIdNum",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "govtOrgLocation",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "govtOrgHeadQuarters",
+                type: "string",
+              },
+              {
+                internalType: "uint256",
+                name: "govtOrgContactNum",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            name: "govtorgLogin",
+            outputs: [
+              {
+                internalType: "string",
+                name: "usern",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "userp",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            name: "govtorgLoginStatus",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            name: "govtorgRegisterStatus",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            name: "govtorgRegisteredStatus",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "govtorgsCount",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "logout",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            name: "matchAddrToEmail",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            name: "myDocuments",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "id",
+                type: "uint256",
+              },
+              {
+                internalType: "string",
+                name: "fileDocName",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "regUniqueNum",
+                type: "string",
+              },
+              {
+                internalType: "bool",
+                name: "initialVerification",
+                type: "bool",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "owner",
+            outputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "string",
+                name: "_govtOrgEmailId",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "_govtOrgPassword",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "_govtOrgName",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "_govtOrgIdNum",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "_govtOrgLocation",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "_govtOrgHeadQuarters",
+                type: "string",
+              },
+              {
+                internalType: "uint256",
+                name: "_govtOrgContactNum",
+                type: "uint256",
+              },
+            ],
+            name: "registerGovtOrg",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "requestUser",
+                type: "address",
+              },
+              {
+                internalType: "uint256",
+                name: "a",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "b",
+                type: "uint256",
+              },
+            ],
+            name: "requestDocsFromGovOrg",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [],
+            name: "showGovtOrgDetails",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [
+              {
+                internalType: "string",
+                name: "_govorgname",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "_govorgpassword",
+                type: "string",
+              },
+            ],
+            name: "signinGovtorg",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [],
+            name: "testStr",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            name: "userDetails",
+            outputs: [
+              {
+                internalType: "string",
+                name: "userEmailId",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "userpassword",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "userFullName",
+                type: "string",
+              },
+              {
+                internalType: "uint256",
+                name: "age",
+                type: "uint256",
+              },
+              {
+                internalType: "string",
+                name: "dateOfBirth",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "userHouseAddress",
+                type: "string",
+              },
+              {
+                internalType: "uint256",
+                name: "mobileNumber",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "aadharNum",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            name: "userLogin",
+            outputs: [
+              {
+                internalType: "string",
+                name: "usern",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "userp",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            name: "userLoginStatus",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "",
+                type: "address",
+              },
+            ],
+            name: "userRegisterStatus",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            name: "userRegisteredStatus",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "user_AadhaarNum",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "user_Age",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "user_Dob",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "user_FullName",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "user_HouseAddr",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "user_MobileNum",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "usersCount",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "string",
+                name: "_userEmailId",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "_userpassword",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "_userFullName",
+                type: "string",
+              },
+              {
+                internalType: "uint256",
+                name: "_age",
+                type: "uint256",
+              },
+              {
+                internalType: "string",
+                name: "_dateOfBirth",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "_userHouseAddr",
+                type: "string",
+              },
+              {
+                internalType: "uint256",
+                name: "_mobileNumber",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "_aadharNum",
+                type: "uint256",
+              },
+            ],
+            name: "registerUser",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [
+              {
+                internalType: "string",
+                name: "_addUserName",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "_addUserPassword",
+                type: "string",
+              },
+            ],
+            name: "addUserLogin",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [
+              {
+                internalType: "string",
+                name: "_username",
+                type: "string",
+              },
+              {
+                internalType: "string",
+                name: "_userpassword",
+                type: "string",
+              },
+            ],
+            name: "signinUser",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [],
+            name: "showUserDetails",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [],
+            name: "showUserFullname",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "showUserAge",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "showUserDob",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "showUserHouseAddr",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "showUserMobileNum",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "showUserAadhaarNum",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "string",
+                name: "regNum",
+                type: "string",
+              },
+            ],
+            name: "addAadhaarDoc",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "userAddress",
+                type: "address",
+              },
+            ],
+            name: "getAadhaarDoc",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [
+              {
+                internalType: "string",
+                name: "regNum",
+                type: "string",
+              },
+            ],
+            name: "addBirthCertDoc",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "userAddress",
+                type: "address",
+              },
+            ],
+            name: "getBirthCertDoc",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [],
+            name: "getTestStr",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "getUsersCount",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "requester",
+                type: "address",
+              },
+            ],
+            name: "getRequestedInfo",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [
+              {
+                internalType: "uint256",
+                name: "n",
+                type: "uint256",
+              },
+            ],
+            name: "getOrgDetails",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [
+              {
+                internalType: "uint256",
+                name: "num",
+                type: "uint256",
+              },
+            ],
+            name: "getOrgNameAt",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "getDoc1",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [],
+            name: "getDoc2",
+            outputs: [
+              {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+            constant: true,
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "req_address",
+                type: "address",
+              },
+              {
+                internalType: "uint256",
+                name: "z",
+                type: "uint256",
+              },
+            ],
+            name: "setPermissionDoc1",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "req_address",
+                type: "address",
+              },
+              {
+                internalType: "uint256",
+                name: "z",
+                type: "uint256",
+              },
+            ],
+            name: "setPermissionDoc2",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "req_address",
+                type: "address",
+              },
+            ],
+            name: "getPermissionDoc1",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "req_address",
+                type: "address",
+              },
+            ],
+            name: "getPermissionDoc2",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+        ];
+
+        contract = new web3.eth.Contract(abi, address);
+      });
+
+      $("#add_birthregnum_btn").click(function () {
+        var status = "Added birth registration number successfully";
+        var birthregNumber;
+        birthregNumber = $("#birthregnum").val();
+        web3.eth
+          .getAccounts()
+          .then(function (accounts) {
+            var acc = accounts[0];
+            return contract.methods
+              .addBirthCertDoc(birthregNumber)
+              .send({ from: acc });
+          })
+          .then(function (tx) {
+            console.log(tx);
+            $("#status").html(status);
+          })
+          .catch(function (tx) {
+            console.log(tx);
+          });
+      });
+    </script>
+  </body>
+</html>

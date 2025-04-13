@@ -1,0 +1,15 @@
+{
+  "name": "decentralized-identity-management-master",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">   <img src=\"https://img.shields.io/github/stars/reshmaharidhas/Decentralized-Identity-management?style=social\">   <img src=\"https://img.shields.io/tokei/lines/github/reshmaharidhas/Decentralized-Identity-management\">   <img src=\"https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Freshmaharidhas%2FDecentralized-Identity-management&label=Visitors&labelColor=%23000000&countColor=%2300ff00&style=plastic\" />  </p>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "circomlib": "^2.0.5",
+    "circomlibjs": "^0.1.7"
+  }
+}
