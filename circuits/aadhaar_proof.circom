@@ -39,6 +39,6 @@ component main = AadhaarProof();
 
 
 
-dog,cat=weights.predict(test_data)
+
 
 
